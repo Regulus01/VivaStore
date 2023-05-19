@@ -1,10 +1,11 @@
-// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors
-
 import 'package:flutter/material.dart';
-import '../Entites/Product.dart';
 import 'package:mini_mercado_flutter/pages/ProductDetailsPage.dart';
 
+import '../Entites/Product';
+
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   List<Product> filteredProducts = [];
 
   String selectedCategory = "Todas"; // Categoria selecionada inicialmente
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -63,11 +65,74 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void filterProductsByName(String keyword) {
+    final List<Product> filteredList = allProducts
+        .where((product) =>
+            product.name.toLowerCase().contains(keyword.toLowerCase()))
+        .toList();
+    setState(() {
+      filteredProducts = filteredList;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home page'),
+        backgroundColor: Colors.white.withOpacity(0.0),
+        elevation: 0.0,
+        title: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(0, 255, 166, 0),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: TextField(
+            controller: searchController,
+            onChanged: (value) {
+              filterProductsByName(value);
+            },
+            decoration: InputDecoration(
+              hintText: 'Pesquisar produtos',
+              hintStyle:
+                  const TextStyle(color: Color.fromARGB(255, 236, 135, 20)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide.none,
+              ),
+              prefixIcon: const Icon(
+                Icons.search,
+                color: Color.fromARGB(255, 236, 135, 20),
+              ),
+            ),
+            style: const TextStyle(color: Color.fromARGB(255, 250, 0, 0)),
+          ),
+        ),
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            child: IconButton(
+              icon: const Icon(
+                Icons.shopping_cart,
+                color: Color.fromARGB(255, 236, 135, 20),
+              ),
+              onPressed: () {
+                // Ação do ícone de carrinho de compras
+              },
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            child: IconButton(
+              icon: const Icon(
+                Icons.notifications,
+                color: Color.fromARGB(255, 236, 135, 20),
+              ),
+              onPressed: () {
+                // Ação do ícone de notificações
+              },
+            ),
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -75,60 +140,69 @@ class _HomePageState extends State<HomePage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.orange,
               ),
-              child: Text(
-                'Categorias',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage('assets/logo.png'),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Categorias',
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontSize: 24,
+                    ),
+                  ),
+                ],
               ),
             ),
             ListTile(
-              title: const Text('Todas'),
+              title: const Text('Todas', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Todas");
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: const Text('Vestuario'),
+              title: const Text('Vestuario', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Vestuario");
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: const Text('Decoração'),
+              title: const Text('Decoração', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Decoração");
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: const Text('Beleza'),
+              title: const Text('Beleza', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Beleza");
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: const Text('Cama'),
+              title: const Text('Cama', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Cama");
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: const Text('Mesa'),
+              title: const Text('Mesa', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Mesa");
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: const Text('Banho'),
+              title: const Text('Banho', style: TextStyle(fontSize: 16)),
               onTap: () {
                 filterProductsByCategory("Banho");
                 Navigator.pop(context);
@@ -140,11 +214,25 @@ class _HomePageState extends State<HomePage> {
       body: ListView.builder(
         itemCount: filteredProducts.length,
         itemBuilder: (context, index) {
-          final product = filteredProducts[index];
+          final Product product = filteredProducts[index];
           return ListTile(
-            leading: Image.network(product.imageUrl),
-            title: Text(product.name),
-            subtitle: Text('R\$ ${product.price.toStringAsFixed(2)}'),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.network(
+                product.imageUrl,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
+            ),
+            title: Text(
+              product.name,
+              style: const TextStyle(fontSize: 18),
+            ),
+            subtitle: Text(
+              'R\$ ${product.price.toStringAsFixed(2)}',
+              style: const TextStyle(fontSize: 16),
+            ),
             onTap: () {
               Navigator.push(
                 context,

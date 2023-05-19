@@ -1,4 +1,7 @@
+import 'package:uuid/uuid.dart';
+
 class Product {
+  final String id = const Uuid().v4();
   final String name;
   final double price;
   final String imageUrl;

@@ -8,6 +8,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController emailController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.only(top: 20, left: 40, right: 40),
@@ -24,6 +27,7 @@ class LoginPage extends StatelessWidget {
             ),
             TextFormField(
               keyboardType: TextInputType.emailAddress,
+              controller: emailController,
               decoration: const InputDecoration(
                   labelText: "E-mail",
                   labelStyle: TextStyle(
@@ -36,6 +40,7 @@ class LoginPage extends StatelessWidget {
               height: 10,
             ),
             TextFormField(
+              controller: passwordController,
               keyboardType: TextInputType.text,
               obscureText: true,
               decoration: const InputDecoration(
@@ -127,7 +132,7 @@ class LoginPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SignupPage(),
+                      builder: (context) => SignupPage(),
                     ),
                   );
                 },
