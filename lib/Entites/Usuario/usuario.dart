@@ -17,6 +17,20 @@ class Usuario {
       required this.role,
       required this.nome});
 
+  String get getId => id;
+
+  String get getLogin => login;
+
+  String get getNome => nome;
+
+  String get getSenha => senha;
+
+  String get getRole => role;
+
+  List<Product> get getCarrinho => carrinho;
+
+  List<Product> get getCompras => compras;
+
   void adicionarAoCarrinho(Product product) {
     carrinho.add(product);
   }

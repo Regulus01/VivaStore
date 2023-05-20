@@ -2,6 +2,7 @@ import 'package:mini_mercado_flutter/pages/reset-password.page.dart';
 import 'package:mini_mercado_flutter/pages/SignupPage.dart';
 import 'package:mini_mercado_flutter/pages/home.page.dart';
 import 'package:flutter/material.dart';
+import 'package:mini_mercado_flutter/sign_up/firestore.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -91,11 +92,37 @@ class LoginPage extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(5))),
               child: SizedBox.expand(
                 child: TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    var email = emailController.text;
+                    var password = passwordController.text;
+
+                    var usuario = await FireStore.getUser(email, password);
+
+                    if (usuario == null) {
+                      // ignore: use_build_context_synchronously
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Erro"),
+                              content:
+                                  const Text("O email informado já existe"),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('Fechar'))
+                              ],
+                            );
+                          });
+                      return; // Parar o fluxo de execução após exibir o alerta
+                    }
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomePage(),
+                        builder: (context) => const HomePage(),
                       ),
                     );
                   },

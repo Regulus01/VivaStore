@@ -43,12 +43,72 @@ class SignupPage extends StatelessWidget {
             ),
             const SizedBox(height: 24.0),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Aqui você pode adicionar a lógica para finalizar o cadastro
                 String email = emailController.text;
                 String name = nameController.text;
                 String password = passwordController.text;
-                FireStore.createUser(email, name, password);
+                var users = await FireStore.readUsers();
+
+                if (users.contains(email)) {
+                  // ignore: use_build_context_synchronously
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Erro"),
+                          content: const Text("O email informado já existe"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Fechar'))
+                          ],
+                        );
+                      });
+                  return; // Parar o fluxo de execução após exibir o alerta
+                }
+
+                var erro = FireStore.createUser(email, name, password);
+
+                if (erro == 0) {
+                  // ignore: use_build_context_synchronously
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Erro"),
+                          content: const Text(
+                              "Ocorreu um erro ao realizar o cadastro"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Fechar'))
+                          ],
+                        );
+                      });
+                } else {
+                  // ignore: use_build_context_synchronously
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("Sucesso"),
+                          content: const Text(
+                              "O usuário foi cadastrado com sucesso"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Fechar'))
+                          ],
+                        );
+                      });
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

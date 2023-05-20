@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mini_mercado_flutter/Entites/Usuario/usuario.dart';
 import 'package:uuid/uuid.dart';
 
 class FireStore {
@@ -15,8 +16,50 @@ class FireStore {
 
     database
         .collection("Usuario")
-        .doc("kwRAPneCkaBmgLmxCmpL")
+        .doc()
         .set(newUser)
         .onError((error, stackTrace) => 0); // retorna 0 em caso de erro
+  }
+
+  static Future<List<String>> readUsers() async {
+    QuerySnapshot querySnapshot = await database.collection('Usuario').get();
+
+    List<Future<String>> futures =
+        querySnapshot.docs.map((QueryDocumentSnapshot documentSnapshot) {
+      Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
+
+      String email = data['login'];
+
+      return Future.value(email);
+    }).toList();
+
+    List<String> emails = await Future.wait(futures);
+    return emails;
+  }
+
+  static Future<DocumentSnapshot<Map<String, dynamic>>?> getUser(
+      String email, String senha) async {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      DocumentSnapshot<Map<String, dynamic>> userSnapshot = snapshot.docs.first;
+      Map<String, dynamic> userData =
+          userSnapshot.data() as Map<String, dynamic>;
+
+      // Verifica a senha
+      if (userData['senha'] == senha) {
+        return userSnapshot;
+      } else {
+        return null; // Senha incorreta
+      }
+    } else {
+      return null; // Usuário não encontrado
+    }
   }
 }
