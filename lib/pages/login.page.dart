@@ -105,8 +105,7 @@ class LoginPage extends StatelessWidget {
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text("Erro"),
-                              content:
-                                  const Text("O email informado já existe"),
+                              content: const Text("Usuario ou senha invalídos"),
                               actions: [
                                 TextButton(
                                     onPressed: () {
@@ -119,6 +118,7 @@ class LoginPage extends StatelessWidget {
                       return; // Parar o fluxo de execução após exibir o alerta
                     }
 
+                    // ignore: use_build_context_synchronously
                     Navigator.push(
                       context,
                       MaterialPageRoute(

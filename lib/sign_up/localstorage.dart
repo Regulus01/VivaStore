@@ -1,14 +1,52 @@
+import 'dart:convert';
+
 import 'package:mini_mercado_flutter/Entites/Usuario/usuario.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class localstorage {
   void saveUserToLocalStorage(Usuario usuario) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('user', usuario);
+
+    var user = {
+      "id": usuario.getId,
+      "login": usuario.login,
+      "nome": usuario.getNome,
+      "senha": usuario.getSenha,
+      "role": usuario.getRole,
+      "carrinho": usuario.getCarrinho,
+      "compras": usuario.getCompras
+    };
+
+    final userJson = json.encode(user);
+    prefs.setString('user', userJson);
   }
 
-  Future<String?> getUserFromLocalStorage() async {
+  static void saveUserJsonToLocalStorage(Map<String, dynamic> usuario) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final userJson = json.encode(usuario);
+    prefs.setString('user', userJson);
+  }
+
+  static Future<String?> getUserFromLocalStorage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('user');
+  }
+
+  static Future<String?> getUserNameLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('nome');
+  }
+
+  static Future<String?> getRoleFromLocalStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userData = prefs.getString('user');
+    // Analisar a string JSON para um objeto Map<String, dynamic>
+    String? role;
+    if (userData != null) {
+      Map<String, dynamic> userMap = jsonDecode(userData);
+      role = userMap['role'];
+    }
+    return role;
   }
 }

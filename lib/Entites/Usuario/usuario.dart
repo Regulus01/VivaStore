@@ -1,6 +1,6 @@
 import 'package:uuid/uuid.dart';
 
-import '../Product';
+import '../Product.dart';
 
 class Usuario {
   final String id = const Uuid().v4();
@@ -8,14 +8,18 @@ class Usuario {
   final String nome;
   final String senha;
   final String role;
-  late List<Product> carrinho;
-  late List<Product> compras;
+  final List<Product> carrinho;
+  final List<Product> compras;
 
-  Usuario(
-      {required this.login,
-      required this.senha,
-      required this.role,
-      required this.nome});
+  Usuario({
+    required this.login,
+    required this.senha,
+    required this.role,
+    required this.nome,
+    List<Product>? carrinho,
+    List<Product>? compras,
+  })  : carrinho = carrinho ?? [],
+        compras = compras ?? [];
 
   String get getId => id;
 

@@ -1,17 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mini_mercado_flutter/Entites/Usuario/usuario.dart';
+import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:convert';
+
+import '../Entites/Product.dart';
 
 class FireStore {
   static var database = FirebaseFirestore.instance;
 
   static createUser(String login, String nome, String senha) {
+    final List<Product> carrinho = [];
+    final List<Product> compras = [];
+
     final newUser = <String, String>{
       "id": const Uuid().v4(),
       "login": login,
       "nome": nome,
       "senha": senha,
-      "role": "cliente"
+      "role": "cliente",
+      "carrinho":
+          jsonEncode(carrinho.map((produto) => produto.toJson()).toList()),
+      "compras":
+          jsonEncode(compras.map((produto) => produto.toJson()).toList()),
     };
 
     database
@@ -42,8 +53,8 @@ class FireStore {
       String email, String senha) async {
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
         .instance
-        .collection('users')
-        .where('email', isEqualTo: email)
+        .collection('Usuario')
+        .where('login', isEqualTo: email)
         .limit(1)
         .get();
 
@@ -52,8 +63,12 @@ class FireStore {
       Map<String, dynamic> userData =
           userSnapshot.data() as Map<String, dynamic>;
 
+      // Adiciona o número do documento ao mapa userData
+      userData['documento'] = userSnapshot.id;
+
       // Verifica a senha
       if (userData['senha'] == senha) {
+        localstorage.saveUserJsonToLocalStorage(userData);
         return userSnapshot;
       } else {
         return null; // Senha incorreta

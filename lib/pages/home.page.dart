@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mini_mercado_flutter/pages/ProductDetailsPage.dart';
+import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Entites/Product';
+import '../Entites/Product.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -38,15 +40,24 @@ class _HomePageState extends State<HomePage> {
     ),
   ];
 
+  String? role;
   List<Product> filteredProducts = [];
-
   String selectedCategory = "Todas"; // Categoria selecionada inicialmente
   TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    filteredProducts = allProducts;
+    initializeData();
+  }
+
+  void initializeData() {
+    localstorage.getRoleFromLocalStorage().then((role) {
+      setState(() {
+        this.role = role;
+        filteredProducts = allProducts;
+      });
+    });
   }
 
   void filterProductsByCategory(String category) {
@@ -208,6 +219,18 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
               },
             ),
+            if (role == 'admin')
+              ListTile(
+                title: const Text(
+                  'Cadastrar Produtos',
+                  style: TextStyle(fontSize: 16),
+                ),
+                onTap: () {
+                  // Ação do item "Cadastrar Produtos"
+                  Navigator.pop(context);
+                  // Implemente a ação de navegação para a página de cadastro de produtos
+                },
+              ),
           ],
         ),
       ),
