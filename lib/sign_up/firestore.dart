@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mini_mercado_flutter/Entites/Usuario/usuario.dart';
 import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
@@ -29,6 +28,25 @@ class FireStore {
         .collection("Usuario")
         .doc()
         .set(newUser)
+        .onError((error, stackTrace) => 0); // retorna 0 em caso de erro
+  }
+
+  static createProduct(String name, double price, String imageUrl,
+      String details, String category, int estoque) {
+    final newProduct = <String, String>{
+      'id': const Uuid().v4(),
+      'name': name,
+      'price': price.toString(),
+      'imageUrl': imageUrl,
+      'estoque': estoque.toString(),
+      'details': details,
+      'category': category,
+    };
+
+    database
+        .collection("Product")
+        .doc()
+        .set(newProduct)
         .onError((error, stackTrace) => 0); // retorna 0 em caso de erro
   }
 
@@ -76,5 +94,39 @@ class FireStore {
     } else {
       return null; // Usuário não encontrado
     }
+  }
+
+  static Future<List<Product>> getProducts() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('Product').get();
+
+    List<Product> products = [];
+
+    for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+      Map<String, dynamic> data =
+          documentSnapshot.data() as Map<String, dynamic>;
+
+      String id = data['id'];
+      String name = data['name'];
+      double price = double.parse(data['price']);
+      int estoque = int.parse(data['estoque']);
+      String imageUrl = data['imageUrl'];
+      String details = data['details'];
+      String category = data['category'];
+
+      Product product = Product(
+        name: name,
+        price: price,
+        estoque: estoque,
+        imageUrl: imageUrl,
+        details: details,
+        category: category,
+      );
+      product.id = id;
+
+      products.add(product);
+    }
+
+    return products;
   }
 }

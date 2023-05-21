@@ -12,34 +12,48 @@ class ProductDetailsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(product.name),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Image.network(
-              product.imageUrl,
-              height: 200,
-              fit: BoxFit.contain,
-            ),
-            SizedBox(height: 20),
-            Text(
-              product.name,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'R\$ ${product.price.toStringAsFixed(2)}',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Ação do botão
-              },
-              child: Text('Adicionar ao Carrinho'),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Image.network(
+                product.imageUrl,
+                height: 200,
+                fit: BoxFit.contain,
+              ),
+              SizedBox(height: 20),
+              Text(
+                product.name,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'R\$ ${product.price.toStringAsFixed(2)}',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Estoque: ${product.estoque}',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Detalhes: ${product.details}',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Ação do botão "Adicionar ao Carrinho"
+                  // Aqui você pode executar a ação desejada, como adicionar o produto ao carrinho
+                  // Por exemplo: cart.addItem(product);
+                },
+                child: Text('Adicionar ao Carrinho'),
+              ),
+            ],
+          ),
         ),
       ),
     );

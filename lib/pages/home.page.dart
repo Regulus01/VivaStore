@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mini_mercado_flutter/pages/ProductDetailsPage.dart';
+import 'package:mini_mercado_flutter/pages/produto/create_produto.page.dart';
+import 'package:mini_mercado_flutter/sign_up/firestore.dart';
 import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,32 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Product> allProducts = [
-    Product(
-      category: "Cama",
-      name: "Produto 1",
-      price: 9.99,
-      details: "detalhe1",
-      imageUrl:
-          "https://st.depositphotos.com/1010338/2099/i/600/depositphotos_20999947-stock-photo-tropical-island-with-palms.jpg",
-    ),
-    Product(
-      category: "Vestuario",
-      name: "Produto 2",
-      price: 19.99,
-      details: "detalhe2",
-      imageUrl:
-          "https://st.depositphotos.com/1010338/2099/i/600/depositphotos_20999947-stock-photo-tropical-island-with-palms.jpg",
-    ),
-    Product(
-      category: "Mesa",
-      name: "Produto 3",
-      price: 29.99,
-      details: "detalhe3",
-      imageUrl:
-          "https://st.depositphotos.com/1010338/2099/i/600/depositphotos_20999947-stock-photo-tropical-island-with-palms.jpg",
-    ),
-  ];
+  List<Product> allProducts = [];
 
   String? role;
   List<Product> filteredProducts = [];
@@ -48,14 +25,22 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    fetchProducts();
     initializeData();
+  }
+
+  void fetchProducts() async {
+    List<Product> productList = await FireStore.getProducts();
+    setState(() {
+      allProducts.addAll(productList);
+      filteredProducts = allProducts;
+    });
   }
 
   void initializeData() {
     localstorage.getRoleFromLocalStorage().then((role) {
       setState(() {
         this.role = role;
-        filteredProducts = allProducts;
       });
     });
   }
@@ -86,11 +71,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void reloadProducts() {
+    setState(() {
+      allProducts.clear();
+      filteredProducts.clear();
+      fetchProducts();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white.withOpacity(0.0),
+        backgroundColor: Colors.orange,
         elevation: 0.0,
         title: Container(
           decoration: BoxDecoration(
@@ -104,15 +97,14 @@ class _HomePageState extends State<HomePage> {
             },
             decoration: InputDecoration(
               hintText: 'Pesquisar produtos',
-              hintStyle:
-                  const TextStyle(color: Color.fromARGB(255, 236, 135, 20)),
+              hintStyle: const TextStyle(color: Colors.white),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide.none,
               ),
               prefixIcon: const Icon(
                 Icons.search,
-                color: Color.fromARGB(255, 236, 135, 20),
+                color: Colors.white,
               ),
             ),
             style: const TextStyle(color: Color.fromARGB(255, 250, 0, 0)),
@@ -124,7 +116,7 @@ class _HomePageState extends State<HomePage> {
             child: IconButton(
               icon: const Icon(
                 Icons.shopping_cart,
-                color: Color.fromARGB(255, 236, 135, 20),
+                color: Colors.white,
               ),
               onPressed: () {
                 // Ação do ícone de carrinho de compras
@@ -136,10 +128,22 @@ class _HomePageState extends State<HomePage> {
             child: IconButton(
               icon: const Icon(
                 Icons.notifications,
-                color: Color.fromARGB(255, 236, 135, 20),
+                color: Colors.white,
               ),
               onPressed: () {
                 // Ação do ícone de notificações
+              },
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            child: IconButton(
+              icon: const Icon(
+                Icons.refresh,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                reloadProducts();
               },
             ),
           ),
@@ -227,7 +231,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 onTap: () {
                   // Ação do item "Cadastrar Produtos"
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductFormPage(),
+                    ),
+                  );
                   // Implemente a ação de navegação para a página de cadastro de produtos
                 },
               ),
