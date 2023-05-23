@@ -12,23 +12,21 @@ class FireStore {
     final List<Product> carrinho = [];
     final List<Product> compras = [];
 
-    final newUser = <String, String>{
+    final newUser = {
       "id": const Uuid().v4(),
       "login": login,
       "nome": nome,
       "senha": senha,
       "role": "cliente",
-      "carrinho":
-          jsonEncode(carrinho.map((produto) => produto.toJson()).toList()),
-      "compras":
-          jsonEncode(compras.map((produto) => produto.toJson()).toList()),
+      "carrinho": carrinho.map((produto) => produto.toJson()).toList(),
+      "compras": compras.map((produto) => produto.toJson()).toList(),
     };
 
     database
         .collection("Usuario")
         .doc()
         .set(newUser)
-        .onError((error, stackTrace) => 0); // retorna 0 em caso de erro
+        .catchError((error, stackTrace) => 0); // retorna 0 em caso de erro
   }
 
   static createProduct(String name, double price, String imageUrl,

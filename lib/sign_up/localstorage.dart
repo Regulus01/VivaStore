@@ -13,8 +13,9 @@ class localstorage {
       "nome": usuario.getNome,
       "senha": usuario.getSenha,
       "role": usuario.getRole,
-      "carrinho": usuario.getCarrinho,
-      "compras": usuario.getCompras
+      "carrinho":
+          usuario.getCarrinho.map((produto) => produto.toJson()).toList(),
+      "compras": usuario.getCompras.map((produto) => produto.toJson()).toList(),
     };
 
     final userJson = json.encode(user);
@@ -23,6 +24,20 @@ class localstorage {
 
   static void saveUserJsonToLocalStorage(Map<String, dynamic> usuario) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (usuario.containsKey("carrinho")) {
+      final carrinho = usuario["carrinho"];
+      final carrinhoJson =
+          json.encode(carrinho.map((produto) => produto.toJson()).toList());
+      usuario["carrinho"] = carrinhoJson;
+    }
+
+    if (usuario.containsKey("compras")) {
+      final compras = usuario["compras"];
+      final comprasJson =
+          json.encode(compras.map((produto) => produto.toJson()).toList());
+      usuario["compras"] = comprasJson;
+    }
 
     final userJson = json.encode(usuario);
     prefs.setString('user', userJson);
