@@ -28,14 +28,14 @@ class localstorage {
     if (usuario.containsKey("carrinho")) {
       final carrinho = usuario["carrinho"];
       final carrinhoJson =
-          json.encode(carrinho.map((produto) => produto.toJson()).toList());
+          json.encode(carrinho.map((produto) => produto).toList());
       usuario["carrinho"] = carrinhoJson;
     }
 
     if (usuario.containsKey("compras")) {
       final compras = usuario["compras"];
       final comprasJson =
-          json.encode(compras.map((produto) => produto.toJson()).toList());
+          json.encode(compras.map((produto) => produto).toList());
       usuario["compras"] = comprasJson;
     }
 

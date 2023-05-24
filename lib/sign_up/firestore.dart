@@ -29,6 +29,18 @@ class FireStore {
         .catchError((error, stackTrace) => 0); // retorna 0 em caso de erro
   }
 
+  static Future<void> updateCart(
+      String documento, List<Product> cartItems) async {
+    CollectionReference usersRef = database.collection('Usuario');
+
+    // Converta a lista de produtos em uma lista de mapas
+    List<Map<String, dynamic>> cartItemsMap =
+        cartItems.map((product) => product.toJson()).toList();
+
+    // Atualize o documento do usuário com o novo carrinho
+    await usersRef.doc(documento).update({'carrinho': cartItemsMap});
+  }
+
   static createProduct(String name, double price, String imageUrl,
       String details, String category, int estoque) {
     final newProduct = <String, String>{

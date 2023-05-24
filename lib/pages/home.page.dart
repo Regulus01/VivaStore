@@ -6,6 +6,7 @@ import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Entites/Product.dart';
+import 'carrinho.page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -119,7 +120,13 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                // Ação do ícone de carrinho de compras
+                // Ação do item "Cadastrar Produtos"
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CartPage(),
+                  ),
+                );
               },
             ),
           ),
