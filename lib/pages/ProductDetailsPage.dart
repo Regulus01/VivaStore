@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mini_mercado_flutter/pages/produto/EditProduct.page.dart';
 import '../Entites/Product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mini_mercado_flutter/sign_up/firestore.dart';
@@ -15,6 +16,27 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   bool addedToCart = false;
+  bool isAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkUserRole();
+  }
+
+  Future<void> checkUserRole() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userJson = prefs.getString('user');
+
+    if (userJson != null) {
+      Map<String, dynamic> userData = jsonDecode(userJson);
+      String? role = userData['role'];
+
+      setState(() {
+        isAdmin = role == 'admin';
+      });
+    }
+  }
 
   Future<void> addToCart(Product product) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -38,7 +60,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           .map((json) => Product.fromJson(json))
           .toList();
       var documento = userData['documento'];
-      
+
       await FireStore.updateCart(documento, cartItems);
 
       setState(() {
@@ -47,11 +69,27 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
   }
 
+  void editProduct() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProductPage(product: widget.product),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.product.name),
+        actions: [
+          if (isAdmin)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: editProduct,
+            ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -89,19 +127,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 onPressed: addedToCart
                     ? null
                     : () {
-                        addToCart(widget.product);
-                      },
+                  addToCart(widget.product);
+                },
                 child: Text('Adicionar ao Carrinho'),
               ),
               SizedBox(height: 10),
               addedToCart
                   ? Text(
-                      'Produto adicionado ao carrinho com sucesso!',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.green,
-                      ),
-                    )
+                'Produto adicionado ao carrinho com sucesso!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.green,
+                ),
+              )
                   : SizedBox(),
             ],
           ),

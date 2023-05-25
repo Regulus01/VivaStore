@@ -161,4 +161,22 @@ class FireStore {
 
     return products;
   }
+
+  static Future<void> atualizarProduto(Product produto) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('Product')
+        .where('id', isEqualTo: produto.id)
+        .get();
+
+    final doc = querySnapshot.docs.first;
+
+    await doc.reference.update({
+      'name': produto.name,
+      'price': produto.price.toString(),
+      'estoque': produto.estoque.toString(),
+      'imageUrl': produto.imageUrl,
+      'details': produto.details,
+      'category': produto.category,
+    });
+  }
 }

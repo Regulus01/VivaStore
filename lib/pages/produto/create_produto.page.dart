@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mini_mercado_flutter/sign_up/firestore.dart';
 import 'package:uuid/uuid.dart';
 
@@ -35,55 +36,75 @@ class _ProductFormPageState extends State<ProductFormPage> {
     super.dispose();
   }
 
+  bool _validateFields() {
+    if (_nameController.text.isEmpty ||
+        _priceController.text.isEmpty ||
+        _imageUrlController.text.isEmpty ||
+        _detailsController.text.isEmpty ||
+        selectedCategory == null ||
+        _stockController.text.isEmpty) {
+      Fluttertoast.showToast(
+        msg: 'É necessário preencher todos os campos.',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+      );
+      return false;
+    }
+    return true;
+  }
+
   void _submitForm() {
-    final String name = _nameController.text;
-    final double price = double.tryParse(_priceController.text) ?? 0.0;
-    final String imageUrl = _imageUrlController.text;
-    final String details = _detailsController.text;
-    final int stock = int.tryParse(_stockController.text) ?? 0;
+    if (_validateFields()) {
+      final String name = _nameController.text;
+      final double price = double.tryParse(_priceController.text) ?? 0.0;
+      final String imageUrl = _imageUrlController.text;
+      final String details = _detailsController.text;
+      final int stock = int.tryParse(_stockController.text) ?? 0;
 
-    // Limpar os campos após o envio
-    _nameController.clear();
-    _priceController.clear();
-    _imageUrlController.clear();
-    _detailsController.clear();
-    _stockController.clear();
+      // Limpar os campos após o envio
+      _nameController.clear();
+      _priceController.clear();
+      _imageUrlController.clear();
+      _detailsController.clear();
+      _stockController.clear();
 
-    // Chamar a função para cadastrar o produto
-    var category = selectedCategory ?? "Vestuario";
-    createProduct(name, price, imageUrl, details, category, stock);
+      // Chamar a função para cadastrar o produto
+      var category = selectedCategory ?? "Vestuario";
+      createProduct(name, price, imageUrl, details, category, stock);
 
-    // Exibir algum feedback para o usuário, como uma notificação ou redirecionamento
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Produto Criado'),
-          content: Text('O produto $name foi cadastrado com sucesso!'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Fechar'),
-            ),
-          ],
-        );
-      },
-    );
+      // Exibir algum feedback para o usuário, como uma notificação ou redirecionamento
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Produto Criado'),
+            content: Text('O produto $name foi cadastrado com sucesso!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Fechar'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> createProduct(
-    String name,
-    double price,
-    String imageUrl,
-    String details,
-    String category,
-    int stock,
-  ) async {
+      String name,
+      double price,
+      String imageUrl,
+      String details,
+      String category,
+      int stock,
+      ) async {
     try {
       // Chamar a função para cadastrar o produto no Firestore
-      await FireStore.createProduct(const Uuid().v4(),name, price, imageUrl, details, category, stock);
+      await FireStore.createProduct(
+          const Uuid().v4(), name, price, imageUrl, details, category, stock);
     } catch (error) {
       // Tratar o erro, exibir uma mensagem de erro, etc.
     }
@@ -110,7 +131,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 controller: _priceController,
                 decoration: const InputDecoration(labelText: 'Preço'),
                 keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                const TextInputType.numberWithOptions(decimal: true),
               ),
               const SizedBox(height: 8.0),
               TextField(

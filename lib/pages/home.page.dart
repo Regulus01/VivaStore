@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mini_mercado_flutter/pages/ProductDetailsPage.dart';
+import 'package:mini_mercado_flutter/pages/login.page.dart';
 import 'package:mini_mercado_flutter/pages/produto/create_produto.page.dart';
 import 'package:mini_mercado_flutter/sign_up/firestore.dart';
 import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
@@ -29,6 +30,16 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     fetchProducts();
     initializeData();
+  }
+
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 
   void fetchProducts() async {
@@ -89,8 +100,15 @@ class _HomePageState extends State<HomePage> {
         elevation: 0.0,
         title: Container(
           decoration: BoxDecoration(
-            color: const Color.fromARGB(0, 255, 166, 0),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                blurRadius: 3,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: TextField(
             controller: searchController,
@@ -99,17 +117,17 @@ class _HomePageState extends State<HomePage> {
             },
             decoration: InputDecoration(
               hintText: 'Pesquisar produtos',
-              hintStyle: const TextStyle(color: Colors.white),
+              hintStyle: const TextStyle(color: Colors.grey),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide.none,
               ),
               prefixIcon: const Icon(
                 Icons.search,
-                color: Colors.white,
+                color: Colors.grey,
               ),
             ),
-            style: const TextStyle(color: Color.fromARGB(255, 250, 0, 0)),
+            style: const TextStyle(color: Colors.black),
           ),
         ),
         actions: [
@@ -174,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                   Text(
                     'Categorias',
                     style: TextStyle(
-                      color: Colors.orange,
+                      color: Colors.white,
                       fontSize: 24,
                     ),
                   ),
@@ -189,9 +207,9 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              title: const Text('Vestuario', style: TextStyle(fontSize: 16)),
+              title: const Text('Vestuário', style: TextStyle(fontSize: 16)),
               onTap: () {
-                filterProductsByCategory("Vestuario");
+                filterProductsByCategory("Vestuário");
                 Navigator.pop(context);
               },
             ),
@@ -245,73 +263,81 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
+            ListTile(
+              title: const Text('Logout', style: TextStyle(fontSize: 16)),
+              onTap: () {
+                _logout();
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.75,
-        ),
-        padding: const EdgeInsets.all(16.0),
-        itemCount: filteredProducts.length,
-        itemBuilder: (context, index) {
-          final Product product = filteredProducts[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProductDetailsPage(product: product),
-                ),
-              );
-            },
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
               ),
-              elevation: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
+              padding: const EdgeInsets.all(16.0),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filteredProducts.length,
+              itemBuilder: (context, index) {
+                final product = filteredProducts[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailsPage(
+                          product: product,
+                        ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    );
+                  },
+                  child: Card(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 8.0),
-                        Text(
-                          product.name,
-                          style: const TextStyle(fontSize: 16),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4.0),
-                        Text(
-                          'R\$ ${product.price.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Image.network(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
                           ),
                         ),
                         const SizedBox(height: 8.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            product.name,
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'R\$ ${product.price.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -322,7 +348,7 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         },
-        child: const Icon(Icons.shopping_basket),
+        child: const Icon(Icons.shopping_bag),
       ),
     );
   }
