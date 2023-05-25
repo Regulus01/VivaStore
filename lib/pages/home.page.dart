@@ -6,6 +6,7 @@ import 'package:mini_mercado_flutter/sign_up/localstorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Entites/Product.dart';
+import 'MyPurchases.page.dart';
 import 'carrinho.page.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       });
     } else {
       final List<Product> filteredList =
-          allProducts.where((product) => product.category == category).toList();
+      allProducts.where((product) => product.category == category).toList();
       setState(() {
         filteredProducts = filteredList;
         selectedCategory = category;
@@ -65,7 +66,7 @@ class _HomePageState extends State<HomePage> {
   void filterProductsByName(String keyword) {
     final List<Product> filteredList = allProducts
         .where((product) =>
-            product.name.toLowerCase().contains(keyword.toLowerCase()))
+        product.name.toLowerCase().contains(keyword.toLowerCase()))
         .toList();
     setState(() {
       filteredProducts = filteredList;
@@ -120,7 +121,6 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.white,
               ),
               onPressed: () {
-                // Ação do item "Cadastrar Produtos"
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -237,41 +237,27 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(fontSize: 16),
                 ),
                 onTap: () {
-                  // Ação do item "Cadastrar Produtos"
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ProductFormPage(),
                     ),
                   );
-                  // Implemente a ação de navegação para a página de cadastro de produtos
                 },
               ),
           ],
         ),
       ),
-      body: ListView.builder(
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.75,
+        ),
+        padding: const EdgeInsets.all(16.0),
         itemCount: filteredProducts.length,
         itemBuilder: (context, index) {
           final Product product = filteredProducts[index];
-          return ListTile(
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                product.imageUrl,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-              ),
-            ),
-            title: Text(
-              product.name,
-              style: const TextStyle(fontSize: 18),
-            ),
-            subtitle: Text(
-              'R\$ ${product.price.toStringAsFixed(2)}',
-              style: const TextStyle(fontSize: 16),
-            ),
+          return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
@@ -280,8 +266,63 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              elevation: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 8.0),
+                        Text(
+                          product.name,
+                          style: const TextStyle(fontSize: 16),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          'R\$ ${product.price.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MyPurchasesPage(),
+            ),
+          );
+        },
+        child: const Icon(Icons.shopping_basket),
       ),
     );
   }

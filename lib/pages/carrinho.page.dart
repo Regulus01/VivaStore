@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Entites/Product.dart';
 import 'dart:convert';
 
+import 'Confirmation.page.dart';
+
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
 
@@ -36,6 +38,15 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  void confirmPurchase() {
+    // Lógica para confirmar a compra
+    // Redirecionar para a página de confirmação, por exemplo:
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ConfirmationPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +73,11 @@ class _CartPageState extends State<CartPage> {
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: confirmPurchase,
+        label: const Text('Confirmar compra'),
+        icon: const Icon(Icons.check),
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mini_mercado_flutter/sign_up/firestore.dart';
+import 'package:uuid/uuid.dart';
 
 class ProductFormPage extends StatefulWidget {
   @override
@@ -82,8 +83,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
   ) async {
     try {
       // Chamar a função para cadastrar o produto no Firestore
-      await FireStore.createProduct(
-          name, price, imageUrl, details, category, stock);
+      await FireStore.createProduct(const Uuid().v4(),name, price, imageUrl, details, category, stock);
     } catch (error) {
       // Tratar o erro, exibir uma mensagem de erro, etc.
     }

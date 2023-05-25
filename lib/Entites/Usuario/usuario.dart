@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:uuid/uuid.dart';
 
 import '../Product.dart';
@@ -34,6 +36,20 @@ class Usuario {
   List<Product> get getCarrinho => carrinho;
 
   List<Product> get getCompras => compras;
+
+  factory Usuario.fromJson(Map<String, dynamic> json) {
+    List<dynamic> carrinhoJson = jsonDecode(json['carrinho']);
+    List<dynamic> comprasJson = jsonDecode(json['compras']);
+
+    return Usuario(
+      login: json['login'],
+      nome: json['nome'],
+      senha: json['senha'],
+      role: json['role'],
+      carrinho: carrinhoJson.map((item) => Product.fromJson(item)).toList(),
+      compras: comprasJson.map((item) => Product.fromJson(item)).toList(),
+    );
+  }
 
   void adicionarAoCarrinho(Product product) {
     carrinho.add(product);

@@ -2,7 +2,7 @@ import 'package:uuid/uuid.dart';
 import 'dart:convert';
 
 class Product {
-  late String id = const Uuid().v4();
+  final String id;
   final String name;
   final double price;
   final int estoque;
@@ -11,7 +11,8 @@ class Product {
   final String category;
 
   Product(
-      {required this.name,
+      {required this.id,
+        required this.name,
       required this.price,
       required this.estoque,
       required this.imageUrl,
@@ -20,6 +21,7 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
+      id : json['id'],
       name: json['name'],
       price: json['price'],
       estoque: json['estoque'],

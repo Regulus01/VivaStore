@@ -41,10 +41,32 @@ class FireStore {
     await usersRef.doc(documento).update({'carrinho': cartItemsMap});
   }
 
-  static createProduct(String name, double price, String imageUrl,
+  static Future<void> clearCart(String documento) async {
+    CollectionReference usersRef = database.collection('Usuario');
+
+    // Crie uma lista vazia para representar o carrinho vazio
+    List<Map<String, dynamic>> emptyCart = [];
+
+    // Atualize o documento do usuário com o carrinho vazio
+    await usersRef.doc(documento).update({'carrinho': emptyCart});
+  }
+
+  static Future<void> updateCompras(
+      String documento, List<Product> cartItems) async {
+    CollectionReference usersRef = database.collection('Usuario');
+
+    // Converta a lista de produtos em uma lista de mapas
+    List<Map<String, dynamic>> cartItemsMap =
+        cartItems.map((product) => product.toJson()).toList();
+
+    // Atualize o documento do usuário com o novo carrinho
+    await usersRef.doc(documento).update({'compras': cartItemsMap});
+  }
+
+  static createProduct(String id, String name, double price, String imageUrl,
       String details, String category, int estoque) {
     final newProduct = <String, String>{
-      'id': const Uuid().v4(),
+      'id': id,
       'name': name,
       'price': price.toString(),
       'imageUrl': imageUrl,
@@ -125,6 +147,7 @@ class FireStore {
       String category = data['category'];
 
       Product product = Product(
+        id: id,
         name: name,
         price: price,
         estoque: estoque,
@@ -132,7 +155,6 @@ class FireStore {
         details: details,
         category: category,
       );
-      product.id = id;
 
       products.add(product);
     }
