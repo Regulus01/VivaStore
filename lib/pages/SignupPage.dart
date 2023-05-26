@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../sign_up/firestore.dart';
 
 class SignupPage extends StatelessWidget {
@@ -7,7 +6,7 @@ class SignupPage extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  SignupPage({super.key});
+  SignupPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -50,23 +49,47 @@ class SignupPage extends StatelessWidget {
                 String password = passwordController.text;
                 var users = await FireStore.readUsers();
 
+                if (email.isEmpty || name.isEmpty || password.isEmpty) {
+                  // ignore: use_build_context_synchronously
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Erro"),
+                        content: const Text("Todos os campos são obrigatórios"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Fechar'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  return; // Parar o fluxo de execução após exibir o alerta
+                }
+
                 if (users.contains(email)) {
                   // ignore: use_build_context_synchronously
                   showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Erro"),
-                          content: const Text("O email informado já existe"),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Fechar'))
-                          ],
-                        );
-                      });
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Erro"),
+                        content: const Text("O email informado já existe"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Fechar'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                   return; // Parar o fluxo de execução após exibir o alerta
                 }
 
@@ -75,39 +98,43 @@ class SignupPage extends StatelessWidget {
                 if (erro == 0) {
                   // ignore: use_build_context_synchronously
                   showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Erro"),
-                          content: const Text(
-                              "Ocorreu um erro ao realizar o cadastro"),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Fechar'))
-                          ],
-                        );
-                      });
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Erro"),
+                        content: const Text(
+                            "Ocorreu um erro ao realizar o cadastro"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Fechar'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 } else {
                   // ignore: use_build_context_synchronously
                   showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Sucesso"),
-                          content: const Text(
-                              "O usuário foi cadastrado com sucesso"),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Fechar'))
-                          ],
-                        );
-                      });
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Sucesso"),
+                        content:
+                            const Text("O usuário foi cadastrado com sucesso"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('Fechar'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(

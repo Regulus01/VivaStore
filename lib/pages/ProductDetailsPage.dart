@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mini_mercado_flutter/pages/produto/EditProduct.page.dart';
 import '../Entites/Product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +40,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Future<void> addToCart(Product product) async {
+    if(product.estoque == 0){
+      Fluttertoast.showToast(
+        msg: 'Sem mais produtos no estoque!',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+      return;
+    }
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userJson = prefs.getString('user');
 
@@ -115,6 +126,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               SizedBox(height: 20),
               Text(
                 'Estoque: ${widget.product.estoque}',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Categoria: ${widget.product.category}',
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 10),

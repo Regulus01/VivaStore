@@ -21,7 +21,15 @@ class _EditProductPageState extends State<EditProductPage> {
   TextEditingController _estoqueController = TextEditingController();
   TextEditingController _imageUrlController = TextEditingController();
   TextEditingController _detailsController = TextEditingController();
-  TextEditingController _categoryController = TextEditingController();
+  String? _categoryValue;
+  List<String> _categories = [
+    'Vestuário',
+    'Decoração',
+    'Beleza',
+    'Cama',
+    'Mesa',
+    'Banho'
+  ];
 
   String? _nameError;
   String? _priceError;
@@ -38,7 +46,7 @@ class _EditProductPageState extends State<EditProductPage> {
     _estoqueController.text = widget.product.estoque.toString();
     _imageUrlController.text = widget.product.imageUrl;
     _detailsController.text = widget.product.details;
-    _categoryController.text = widget.product.category;
+    _categoryValue = widget.product.category;
   }
 
   @override
@@ -48,23 +56,20 @@ class _EditProductPageState extends State<EditProductPage> {
     _estoqueController.dispose();
     _imageUrlController.dispose();
     _detailsController.dispose();
-    _categoryController.dispose();
     super.dispose();
   }
 
   void _validateFields() {
     setState(() {
       _nameError = _nameController.text.isEmpty ? 'Campo obrigatório' : null;
-      _priceError =
-      _priceController.text.isEmpty ? 'Campo obrigatório' : null;
+      _priceError = _priceController.text.isEmpty ? 'Campo obrigatório' : null;
       _estoqueError =
-      _estoqueController.text.isEmpty ? 'Campo obrigatório' : null;
+          _estoqueController.text.isEmpty ? 'Campo obrigatório' : null;
       _imageUrlError =
-      _imageUrlController.text.isEmpty ? 'Campo obrigatório' : null;
+          _imageUrlController.text.isEmpty ? 'Campo obrigatório' : null;
       _detailsError =
-      _detailsController.text.isEmpty ? 'Campo obrigatório' : null;
-      _categoryError =
-      _categoryController.text.isEmpty ? 'Campo obrigatório' : null;
+          _detailsController.text.isEmpty ? 'Campo obrigatório' : null;
+      _categoryError = _categoryValue == null ? 'Campo obrigatório' : null;
     });
 
     if (_nameError == null &&
@@ -81,7 +86,7 @@ class _EditProductPageState extends State<EditProductPage> {
         price: double.parse(_priceController.text),
         estoque: int.parse(_estoqueController.text),
         details: _detailsController.text,
-        category: _categoryController.text,
+        category: _categoryValue!,
       );
 
       FireStore.atualizarProduto(newProduct);
@@ -152,12 +157,23 @@ class _EditProductPageState extends State<EditProductPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextField(
-                controller: _categoryController,
+              DropdownButtonFormField<String>(
+                value: _categoryValue,
                 decoration: InputDecoration(
                   labelText: 'Categoria',
                   errorText: _categoryError,
                 ),
+                onChanged: (newValue) {
+                  setState(() {
+                    _categoryValue = newValue;
+                  });
+                },
+                items: _categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
